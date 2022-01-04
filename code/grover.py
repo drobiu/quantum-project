@@ -11,7 +11,7 @@ from quantuminspire.qiskit import QI
 
 QI_URL = os.getenv('API_URL', 'https://api.quantum-inspire.com/')
 
-email = 'k.t.dobiczek@student.tudelft.nl'
+email = ''
 password = getpass()
 
 authentication = BasicAuthentication(email, password)
