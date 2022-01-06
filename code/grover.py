@@ -5,17 +5,21 @@ from getpass import getpass
 from coreapi.auth import BasicAuthentication
 from qiskit import BasicAer, execute
 from qiskit.circuit import QuantumRegister, ClassicalRegister, QuantumCircuit
-
+from quantuminspire.credentials import get_token_authentication
 from quantuminspire.credentials import get_authentication
 from quantuminspire.qiskit import QI
+from quantuminspire.credentials import save_account
+from quantuminspire.api import QuantumInspireAPI
 
+save_account('40a1a77810b8d0e10428efa64ae124e79f2b6336')
+
+QI.set_authentication()
+
+# ProjectQ token authentication, do
+
+qi = QuantumInspireAPI()
 QI_URL = os.getenv('API_URL', 'https://api.quantum-inspire.com/')
 
-email = ''
-password = getpass()
-
-authentication = BasicAuthentication(email, password)
-QI.set_authentication(authentication, QI_URL)
 qi_backend = QI.get_backend('QX single-node simulator')
 
 q = QuantumRegister(3, "q")
@@ -67,4 +71,4 @@ backend = BasicAer.get_backend("qasm_simulator")
 job = execute(qc, backend=backend, shots=1024)
 result = job.result()
 print(result.get_counts(qc))
-qc.draw(output="latex")
+print(qc.draw(output="text"))

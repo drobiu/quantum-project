@@ -11,14 +11,14 @@ import os
 
 from qiskit import BasicAer, execute
 from qiskit.circuit import QuantumRegister, ClassicalRegister, QuantumCircuit
-
+from coreapi.auth import BasicAuthentication
 from quantuminspire.credentials import get_authentication
 from quantuminspire.qiskit import QI
 
 QI_URL = os.getenv('API_URL', 'https://api.quantum-inspire.com/')
-
-
-authentication = get_authentication()
+email='ray.mao1999@hotmail.com'
+password='Mm19991202.QUANTUM'
+authentication = BasicAuthentication(email,password)
 QI.set_authentication(authentication, QI_URL)
 qi_backend = QI.get_backend('QX single-node simulator')
 
