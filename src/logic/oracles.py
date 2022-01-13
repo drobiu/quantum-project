@@ -7,11 +7,11 @@ from src.util.util import run_qc
 
 
 def oracle_a(circuit, q, a, s):
-    circuit = circuit.compose(sgate(s))
+    circuit = circuit.compose(sgate(s), qubits=a)
 
-    circuit = count(circuit, q, a)
+    circuit = count(circuit, q, a, step=2)
 
-    circuit = circuit.compose(sgate(s))
+    circuit = circuit.compose(sgate(s), qubits=a)
 
     return circuit
 
