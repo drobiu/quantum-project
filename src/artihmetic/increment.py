@@ -1,14 +1,10 @@
+import math
 import os
 
-from qiskit import BasicAer, execute
-
+from qiskit.circuit.library.basis_change import QFT
+from qiskit.circuit.library.standard_gates import PhaseGate
 from quantuminspire.credentials import get_authentication
 from quantuminspire.qiskit import QI
-from qiskit.circuit.library.standard_gates import PhaseGate
-from qiskit.circuit.library.basis_change import QFT
-import numpy as np
-import matplotlib.pyplot as plt
-import math
 
 QI_URL = os.getenv('API_URL', 'https://api.quantum-inspire.com/')
 
