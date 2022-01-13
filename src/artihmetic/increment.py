@@ -1,16 +1,7 @@
 import math
-import os
 
 from qiskit.circuit.library.basis_change import QFT
 from qiskit.circuit.library.standard_gates import PhaseGate
-from quantuminspire.credentials import get_authentication
-from quantuminspire.qiskit import QI
-
-QI_URL = os.getenv('API_URL', 'https://api.quantum-inspire.com/')
-
-authentication = get_authentication()
-QI.set_authentication(authentication, QI_URL)
-qi_backend = QI.get_backend('QX single-node simulator')
 
 
 def increment(circuit, register, amount=1, apply_QFT=True):
