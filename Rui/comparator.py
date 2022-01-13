@@ -29,9 +29,9 @@ def comparator(num_state_qubits):
         # define register containing the sum and number of qubits for QFT circuit
 
         # build QFT adder circuit
-    qc=qc.compose(DraperQFTSubtractor(num_state_qubits),qubits=range(7))
+    qc=qc.compose(DraperQFTSubtractor(num_state_qubits),qubits=range(2*num_state_qubits+1))
 
-    qc=qc.compose(DraperQFTAdder(num_state_qubits),qubits=range(6))
+    qc=qc.compose(DraperQFTAdder(num_state_qubits),qubits=range(2*num_state_qubits))
 
     return qc
 
