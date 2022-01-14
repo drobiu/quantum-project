@@ -15,7 +15,7 @@ a = QuantumRegister(3, "a")
 b = QuantumRegister(3, "b")
 qc = QuantumCircuit(a, b, name="conditional")
 adder = DraperQFTAdder(3)
-qc = qc.compose(adder)
+qc = qc.compose(adder.to_gate(label="adder"))
 
 print(adder.qubits)
 print(qc.draw(output="text"))

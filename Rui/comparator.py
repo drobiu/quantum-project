@@ -1,9 +1,8 @@
-import numpy as np
+
 import os
-import math
+
 from qiskit.circuit.quantumcircuit import QuantumCircuit
 from qiskit.circuit.quantumregister import QuantumRegister
-from qiskit.circuit.library.basis_change import QFT
 from quantuminspire.qiskit import QI
 from getpass import getpass
 from coreapi.auth import TokenAuthentication
@@ -29,11 +28,12 @@ def comparator(num_state_qubits):
         # define register containing the sum and number of qubits for QFT circuit
 
         # build QFT adder circuit
-    qc=qc.compose(DraperQFTSubtractor(num_state_qubits),qubits=range(2*num_state_qubits+1))
+    qc=qc.compose(DraperQFTSubtractor(num_state_qubits).to_gate(label="subtractor"),qubits=range(2*num_state_qubits+1))
 
-    qc=qc.compose(DraperQFTAdder(num_state_qubits),qubits=range(2*num_state_qubits))
+    qc=qc.compose(DraperQFTAdder(num_state_qubits).to_gate(label="Adder"),qubits=range(2*num_state_qubits))
 
     return qc
+print(comparator(3).draw(output="text"))
 
 
 
