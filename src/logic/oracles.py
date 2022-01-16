@@ -1,5 +1,7 @@
 import numpy as np
 from qiskit import QuantumRegister, ClassicalRegister, QuantumCircuit
+from qiskit.circuit.library import QFT
+from scipy.special import binom
 
 from Rui.sgate.sgate import sgate
 from src.artihmetic.counter import count
@@ -23,11 +25,47 @@ def c_gate(k, length=4):
 
 
 def oracle_b(circuit, q, b, s):
-    q_len = len(q)
+    q_l = len(q)
 
-    values = np.unique(s)
-    for i in range(len(values)):
-        circuit = circuit.compose(c_gate(i, int(q_len/2)))
+    # circuit = circuit.compose(QFT(num_qubits=q_l, approximation_degree=0, do_swaps=True,
+    #                               inverse=True, insert_barriers=True, name='qft'))
+    #
+    #
+    #
+    # circuit = circuit.compose(QFT(num_qubits=q_l, approximation_degree=0, do_swaps=True,
+    #                               inverse=True, insert_barriers=True, name='iqft'))
+
+    # Hardcoded for now
+    n_colors = 4
+
+    color_count = [s.count(i) for i in range(n_colors)]
+
+    for color, c_n in enumerate(color_count):
+        if c_n == 0:
+            continue
+
+        contrib = []
+        contrib[0] = 1
+
+        for i in range(q_l):
+            if 0 < i < n_colors:
+                contrib[i] = 0
+            else:
+                curr_cont = c_n - i
+                for j in range(c_n, i-1):
+                    curr_cont -= binom(i, j) * contrib[j]
+
+        circuit = circuit.compose(c_gate(color))
+
+        circuit = count(circuit, q, b, step=2)
+
+        for i in range(c_n, q_l):
+            # add combinations
+            comp = contrib[i]
+
+
+
+
 
 def test():
     q = QuantumRegister(8)

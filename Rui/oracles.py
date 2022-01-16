@@ -7,7 +7,6 @@ from src.util.util import run_qc
 
 
 def oracle_a(circuit, q, a, s):
-
     circuit = circuit.compose(sgate(s).to_gate(label="s"), qubits=a)
 
     circuit = count(circuit, q, a, step=2)
