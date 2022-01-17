@@ -1,19 +1,18 @@
 import numpy as np
 from qiskit import QuantumRegister, ClassicalRegister, QuantumCircuit
-from qiskit.circuit.library import QFT
 from scipy.special import binom
 
-from Rui.sgate.sgate import sgate
+from src.logic.s_gate import s_gate
 from src.artihmetic.counter import count
 from src.util.util import run_qc
 
 
 def oracle_a(circuit, q, a, s):
-    circuit = circuit.compose(sgate(s).to_gate(label="s"), qubits=a)
+    circuit = circuit.compose(s_gate(s).to_gate(label="s"))
 
-    circuit = count(circuit, q, a, step=2)
+    circuit = count(circuit, a, q, step=2)
 
-    circuit = circuit.compose(sgate(s).to_gate(label="s"), qubits=a)
+    circuit = circuit.compose(s_gate(s).to_gate(label="s"))
 
     return circuit
 
@@ -21,7 +20,7 @@ def oracle_a(circuit, q, a, s):
 def c_gate(k, length=4):
     s = np.ones(length) * k
 
-    return sgate(s, length/2)
+    return s_gate(s, length/2)
 
 
 def oracle_b(circuit, q, b, s):
@@ -64,9 +63,6 @@ def oracle_b(circuit, q, b, s):
             comp = contrib[i]
 
 
-
-
-
 def test():
     q = QuantumRegister(8)
     a = QuantumRegister(3)
@@ -83,6 +79,10 @@ def test():
 
     run_qc(qc)
     qc.draw(output="mpl")
+
+    import os
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+    print(dir_path)
 
 
 if __name__ == "__main__":
