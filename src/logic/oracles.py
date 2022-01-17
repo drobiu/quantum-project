@@ -13,11 +13,11 @@ def oracle_a(circuit, q, a, s):
 #q: quantum registers, color inputs
 #a: quantum registers, count of correct colors at correct places.
 #s: array of integer. The input of sgate, which represents the secret string. 
-    circuit = circuit.compose(sgate(s).to_gate(label="s"), qubits=q)
+    circuit = circuit.compose(s_gate(s).to_gate(label="s"), qubits=q)
 
     circuit = count(circuit, q, a, step=1)
 
-    circuit = circuit.compose(sgate(s).to_gate(label="s"), qubits=q)
+    circuit = circuit.compose(s_gate(s).to_gate(label="s"), qubits=q)
 
     return circuit
 

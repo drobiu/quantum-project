@@ -36,4 +36,4 @@ def FCP(num_position, num_bits_color):
     return qc
 
 
-#print(FCP(4, 2).draw(output="text"))
+print(FCP(4, 2).draw(output='text'))
