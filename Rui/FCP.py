@@ -1,12 +1,11 @@
+import os
 import sys
-
-sys.path.append('../')
-
+print(os.getcwd())
+print(sys.path)
 from qiskit.circuit.quantumcircuit import QuantumCircuit
 from qiskit.circuit.quantumregister import QuantumRegister
-
 from query import query
-from oracles import oracle_a
+from src.logic.oracles import oracle_a
 
 
 def FCP(num_position, num_bits_color):
@@ -24,7 +23,7 @@ def FCP(num_position, num_bits_color):
 
     # step 3: ask oracle
     # TODO: fix oracle
-    #   qc = oracle_a(qc, range(4, 12), range(13, 16), range(4))
+    qc = oracle_a(qc, range(4, 12), range(13, 16), range(4))
 
     # step 4: apply Z to LSB
     qc.z(out[0])
