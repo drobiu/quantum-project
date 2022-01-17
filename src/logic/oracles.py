@@ -1,4 +1,6 @@
 import numpy as np
+import sys
+sys.path.extend("../")
 from qiskit import QuantumRegister, ClassicalRegister, QuantumCircuit
 from qiskit.circuit.library import QFT
 from scipy.special import binom
@@ -9,11 +11,14 @@ from src.util.util import run_qc
 
 
 def oracle_a(circuit, q, a, s):
-    circuit = circuit.compose(sgate(s).to_gate(label="s"), qubits=a)
+#q: quantum registers, color inputs
+#a: quantum registers, count of correct colors at correct places.
+#s: array of integer. The input of sgate, which represents the secret string. 
+    circuit = circuit.compose(sgate(s).to_gate(label="s"), qubits=q)
 
-    circuit = count(circuit, q, a, step=2)
+    circuit = count(circuit, q, a, step=1)
 
-    circuit = circuit.compose(sgate(s).to_gate(label="s"), qubits=a)
+    circuit = circuit.compose(sgate(s).to_gate(label="s"), qubits=q)
 
     return circuit
 
@@ -85,5 +90,5 @@ def test():
     qc.draw(output="mpl")
 
 
-if __name__ == "__main__":
-    test()
+#if __name__ == "__main__":
+#    test()

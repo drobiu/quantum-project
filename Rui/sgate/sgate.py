@@ -21,4 +21,4 @@ def sgate(numarray, num_state_array=2):
     return qc
 
 
-# print(sgate([0, 1], 3).draw(output="text"))
+#print(sgate(range(4)).draw(output="text"))

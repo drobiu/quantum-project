@@ -3,7 +3,6 @@ import math
 from qiskit.circuit.library.basis_change import QFT
 from qiskit.circuit.library.standard_gates import PhaseGate
 
-
 def increment(circuit, register, amount=1, apply_QFT=True):
     q_reg = register
     num = len(q_reg)
@@ -16,7 +15,7 @@ def increment(circuit, register, amount=1, apply_QFT=True):
         qc.barrier()
 
     for i, qubit in enumerate(q_reg):
-        qc.rz(amount * math.pi / 2 ** (num - 1 - i), qubit)
+        qc.rx(amount * math.pi / 2 ** (num - 1 - i), qubit)
 
     if apply_QFT:
         qc.barrier()
@@ -38,10 +37,9 @@ def control_increment(circuit, qregister, cregister, amount=1, apply_QFT=True):
         qc = qc.compose(QFT(num_qubits=numq, approximation_degree=0, do_swaps=True,
                             inverse=False, insert_barriers=True, name='qft'))
         qc.barrier()
-
     for i, qubit in enumerate(q_reg):
-        ncp = PhaseGate(amount * math.pi / 2 ** (numq - i - 1)).control(numc)
-        qc.append(ncp, [*c_reg, qubit])
+        qc.rx(amount * math.pi / 2 ** (numq - i - 1),c_reg,qubit)
+        
 
     if apply_QFT:
         qc.barrier()
