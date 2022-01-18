@@ -29,7 +29,7 @@ def FCP(num_position, num_bits_color,secret_string):
 
     # step 5: undo step 2 and 3
     qc = qc.compose(query().to_gate(label="query"), range(12))
-    qc = oracle_a(qc, q2, out, range(4))
+    #qc = oracle_a(qc, q2, out, range(4))
 
     # step 6: apply H gate
     qc.h(range(num_position))
@@ -38,4 +38,4 @@ def FCP(num_position, num_bits_color,secret_string):
 
 
 if __name__ == "__main__":
-    print(FCP(4, 2).draw(output="text"))
+    print(FCP(4, 2,[0,1,2,3]).draw(output="text"))
