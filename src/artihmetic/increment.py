@@ -26,7 +26,7 @@ def increment(circuit, register, amount=1, apply_QFT=True):
     return qc
 
 
-def control_increment(circuit, qregister, cregister, amount=1, apply_QFT=True):
+def control_increment(circuit, cregister, qregister, amount=1, apply_QFT=True):
     q_reg = qregister
     c_reg = cregister
     numq = len(q_reg)
@@ -39,7 +39,7 @@ def control_increment(circuit, qregister, cregister, amount=1, apply_QFT=True):
         qc.barrier()
 
     for i, qubit in enumerate(q_reg):
-        qc.crx(amount * math.pi / 2 ** (numq - i - 1), c_reg, qubit)
+        qc.crx(amount * math.pi / 2 ** (numq - i - 1),c_reg, qubit)
 
     if apply_QFT:
         qc.barrier()

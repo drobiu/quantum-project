@@ -1,8 +1,6 @@
 import os
 import sys
-
-print(os.getcwd())
-print(sys.path)
+sys.path.extend('../')
 from qiskit.circuit.quantumcircuit import QuantumCircuit
 from qiskit.circuit.quantumregister import QuantumRegister
 from query import query

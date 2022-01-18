@@ -41,7 +41,7 @@ def mincount(circuit, q_register, a_register, amount=1, step=1, apply_QFT=True):
         circuit.barrier()
 
     for i in range(int(a_l / step)):
-        circuit = control_decrement(circuit, q_register, a_register[i * step:(i + 1) * step], amount, apply_QFT=False)
+        circuit = control_decrement(circuit,  a_register[i * step:(i + 1) * step], q_register,amount, apply_QFT=False)
 
     if apply_QFT:
         circuit.barrier()
