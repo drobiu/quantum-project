@@ -17,7 +17,7 @@ def count(circuit, count_register, control_register, amount=1, step=1, apply_QFT
         # circuit.barrier()
 
     for i in range(int(a_l / step)):
-        circuit = control_increment(circuit, count_register, control_register[i * step:(i + 1) * step],
+        circuit = control_increment(circuit, count_register, control_register[i * step: (i + 1) * step],
                                     amount, apply_QFT=False)
 
     if apply_QFT:
