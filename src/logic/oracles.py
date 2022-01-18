@@ -57,11 +57,10 @@ def oracle_b(circuit, q, b, s):
 
         contrib = [1] + (c_n - 1) * [0]
 
-        for i in range(c_n + 1, n + 1):
-            curr_cont = c_n - i
-            for j in range(c_n + 1, i):
-                curr_cont -= binom(i, j) * contrib[j]
-
+        for i in range(c_n + 1, n_colors + 1):
+            curr_cont = c_n
+            for j in range(1, i):
+                curr_cont -= binom(i, j) * contrib[j - 1]
             contrib.append(curr_cont)
 
         circuit = circuit.compose(c_gate(color))
@@ -109,7 +108,7 @@ def test():
 
     # [0, 0, 0, 1] = 11, 11, 11, 10
 
-    qc = oracle_b(qc, q, a, [0, 0, 0, 1])
+    qc = oracle_b(qc, q, a, [0, 0, 1, 1])
 
     # Should equal 110
     qc.measure(q[:], c[:])
