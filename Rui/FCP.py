@@ -7,7 +7,7 @@ from Rui.query import query
 from src.logic.oracles import oracle_a
 
 
-def FCP(num_position, num_bits_color):
+def FCP(num_position, num_bits_color,secret_string):
     # init
     q1 = QuantumRegister(num_position, "q1")
     q2 = QuantumRegister(num_bits_color * num_position)
@@ -22,7 +22,7 @@ def FCP(num_position, num_bits_color):
 
     # step 3: ask oracle
     # TODO: fix oracle
-    qc = oracle_a(qc, q2, out, [0, 1, 2, 3])
+    qc = oracle_a(qc, q2, out,secret_string)
 
     # step 4: apply Z to LSB
     qc.z(out[0])

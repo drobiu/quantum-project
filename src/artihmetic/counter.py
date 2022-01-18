@@ -13,7 +13,7 @@ def count(circuit, count_register, control_register, amount=1, step=1, apply_QFT
     if apply_QFT:
         # circuit.barrier()
         circuit = circuit.compose(QFT(num_qubits=q_l, approximation_degree=0, do_swaps=True,
-                                      inverse=False, insert_barriers=True, name='qft'))
+                                      inverse=False, insert_barriers=True, name='qft'),qubits=count_register)
         # circuit.barrier()
 
     for i in range(int(a_l / step)):
@@ -23,7 +23,7 @@ def count(circuit, count_register, control_register, amount=1, step=1, apply_QFT
     if apply_QFT:
         # circuit.barrier()
         circuit = circuit.compose(QFT(num_qubits=q_l, approximation_degree=0, do_swaps=True,
-                                      inverse=True, insert_barriers=True, name='iqft'))
+                                      inverse=True, insert_barriers=True, name='iqft'),qubits=count_register)
         # circuit.barrier()
 
     return circuit
