@@ -1,7 +1,7 @@
 import math
 
 from qiskit.circuit.library.basis_change import QFT
-from qiskit.circuit.library.standard_gates import PhaseGate
+
 
 def increment(circuit, register, amount=1, apply_QFT=True):
     q_reg = register
@@ -26,9 +26,9 @@ def increment(circuit, register, amount=1, apply_QFT=True):
     return qc
 
 
-def control_increment(circuit, cregister, qregister, amount=1, apply_QFT=True):
-    q_reg = qregister
-    c_reg = cregister
+def control_increment(circuit, q_register, control_register, amount=1, apply_QFT=True):
+    q_reg = q_register
+    c_reg = control_register
     numq = len(q_reg)
     numc = len(c_reg)
     qc = circuit
@@ -53,5 +53,5 @@ def decrement(circuit, register, amount=1, apply_QFT=True):
     return increment(circuit, register, -amount, apply_QFT)
 
 
-def control_decrement(circuit, qregister, cregister, amount=1, apply_QFT=True):
-    return control_increment(circuit, qregister, cregister, -amount, apply_QFT)
+def control_decrement(circuit, q_register, control_register, amount=1, apply_QFT=True):
+    return control_increment(circuit, q_register, control_register, -amount, apply_QFT)

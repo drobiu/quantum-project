@@ -3,7 +3,7 @@ import sys
 sys.path.extend('../')
 from qiskit.circuit.quantumcircuit import QuantumCircuit
 from qiskit.circuit.quantumregister import QuantumRegister
-from query import query
+from Rui.query import query
 from src.logic.oracles import oracle_a
 
 
@@ -29,7 +29,7 @@ def FCP(num_position, num_bits_color):
 
     # step 5: undo step 2 and 3
     qc = qc.compose(query().to_gate(label="query"), range(12))
-    #   qc = oracle_a(qc, q2, out, range(4))
+    qc = oracle_a(qc, q2, out, range(4))
 
     # step 6: apply H gate
     qc.h(range(num_position))

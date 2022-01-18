@@ -5,32 +5,33 @@ from src.artihmetic.increment import control_increment, control_decrement
 from src.util.util import run_qc
 
 
-def count(circuit, q_register, a_register, amount=1, step=1, apply_QFT=True):
-    q_l = len(q_register)
-    a_l = len(a_register)
+def count(circuit, count_register, control_register, amount=1, step=1, apply_QFT=True):
+    q_l = len(count_register)
+    a_l = len(control_register)
     assert a_l % step == 0
 
     if apply_QFT:
-        #circuit.barrier()
+        # circuit.barrier()
         circuit = circuit.compose(QFT(num_qubits=q_l, approximation_degree=0, do_swaps=True,
-                                 inverse=False, insert_barriers=True, name='qft'))
-        #circuit.barrier()
+                                      inverse=False, insert_barriers=True, name='qft'))
+        # circuit.barrier()
 
     for i in range(int(a_l / step)):
-        circuit = control_increment(circuit, q_register, a_register[i * step:(i + 1) * step], amount, apply_QFT=False)
+        circuit = control_increment(circuit, count_register, control_register[i * step:(i + 1) * step],
+                                    amount, apply_QFT=False)
 
     if apply_QFT:
-        #circuit.barrier()
+        # circuit.barrier()
         circuit = circuit.compose(QFT(num_qubits=q_l, approximation_degree=0, do_swaps=True,
                                       inverse=True, insert_barriers=True, name='iqft'))
-        #circuit.barrier()
+        # circuit.barrier()
 
     return circuit
 
 
-def mincount(circuit, q_register, a_register, amount=1, step=1, apply_QFT=True):
-    q_l = len(q_register)
-    a_l = len(a_register)
+def mincount(circuit, count_register, control_register, amount=1, step=1, apply_QFT=True):
+    q_l = len(count_register)
+    a_l = len(control_register)
 
     assert a_l % step == 0
 
@@ -41,7 +42,7 @@ def mincount(circuit, q_register, a_register, amount=1, step=1, apply_QFT=True):
         circuit.barrier()
 
     for i in range(int(a_l / step)):
-        circuit = control_decrement(circuit,  a_register[i * step:(i + 1) * step], q_register,amount, apply_QFT=False)
+        circuit = control_decrement(circuit, count_register, control_register[i * step:(i + 1) * step], amount, apply_QFT=False)
 
     if apply_QFT:
         circuit.barrier()
