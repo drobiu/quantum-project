@@ -25,7 +25,7 @@ def oracle_a(circuit, q, a, s):
     """
     circuit = circuit.compose(s_gate(s).to_gate(label="s"), qubits=q)
 
-    circuit = count(circuit, q, a, step=1)
+    circuit = count(circuit, a, q, step=1)
 
     circuit = circuit.compose(s_gate(s).to_gate(label="s"), qubits=q)
 
