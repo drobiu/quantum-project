@@ -59,16 +59,16 @@ def oracle_b(circuit, q, b, s):
 
         for i in range(c_n + 1, n + 1):
             curr_cont = c_n - i
-            for j in range(c_n, i - 1):
+            for j in range(c_n + 1, i):
                 curr_cont -= binom(i, j) * contrib[j]
 
             contrib.append(curr_cont)
 
         circuit = circuit.compose(c_gate(color))
 
-        print(contrib)
+        print(color, c_n, contrib)
 
-        circuit = count(circuit, q, b, step=2)
+        circuit = count(circuit, q, b, step=2, apply_QFT=False)
 
         for i in range(c_n, n):
             comp = contrib[i]
