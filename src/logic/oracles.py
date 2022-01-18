@@ -5,14 +5,14 @@ import sys
 
 from qiskit.circuit.library import QFT
 
-from src.artihmetic.increment import control_increment
+from src.arithmetic.increment import control_increment
 
 sys.path.extend("../")
 from qiskit import QuantumRegister, ClassicalRegister, QuantumCircuit
 from scipy.special import binom
 
 from src.logic.s_gate import s_gate
-from src.artihmetic.counter import count
+from src.arithmetic.counter import count
 from src.util.util import run_qc
 
 

@@ -1,7 +1,7 @@
 from qiskit import QuantumCircuit, ClassicalRegister, QuantumRegister
 from qiskit.circuit.library import QFT
 
-from src.artihmetic.increment import control_increment, control_decrement
+from src.arithmetic.increment import control_increment, control_decrement
 from src.util.util import run_qc
 
 
