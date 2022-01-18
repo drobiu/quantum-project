@@ -16,7 +16,7 @@ from src.artihmetic.counter import count
 from src.util.util import run_qc
 
 
-def oracle_a(circuit, q, a, s):
+def oracle_a(circuit, q, a, s,do_inverse=False):
     """
     circuit:    the circuit to which to append the oracle.
     q:          quantum registers, color inputs.
@@ -24,8 +24,11 @@ def oracle_a(circuit, q, a, s):
     s:          array of integer. The input of s_gate, which represents the secret string.
     """
     circuit = circuit.compose(s_gate(s).to_gate(label="s"), qubits=q)
+    if not do_inverse:
+    circuit = count(circuit, a, q, step=2)
 
-    circuit = count(circuit, a, q, step=1)
+    if do_inverse:
+    circuit=count(circuit,a,q,amount=-amount,step=2)
 
     circuit = circuit.compose(s_gate(s).to_gate(label="s"), qubits=q)
 
