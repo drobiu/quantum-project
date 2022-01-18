@@ -25,10 +25,10 @@ def oracle_a(circuit, q, a, s,do_inverse=False):
     """
     circuit = circuit.compose(s_gate(s).to_gate(label="s"), qubits=q)
     if not do_inverse:
-    circuit = count(circuit, a, q, step=2)
+     circuit = count(circuit, a, q, step=2)
 
     if do_inverse:
-    circuit=count(circuit,a,q,amount=-amount,step=2)
+     circuit=count(circuit,a,q,amount=-1,step=2)
 
     circuit = circuit.compose(s_gate(s).to_gate(label="s"), qubits=q)
 
