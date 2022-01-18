@@ -20,8 +20,9 @@ q = QuantumRegister(15, "q")
 c = ClassicalRegister(15, "c")
 qc = QuantumCircuit(q, c, name="conditional")
 
-
+qc.x([0,2])
 qc=qc.compose(FCP(4,2),range(15))
+
 
 qc.measure(q,c)
 
