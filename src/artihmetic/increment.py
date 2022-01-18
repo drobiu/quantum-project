@@ -37,9 +37,9 @@ def control_increment(circuit, qregister, cregister, amount=1, apply_QFT=True):
         qc = qc.compose(QFT(num_qubits=numq, approximation_degree=0, do_swaps=True,
                             inverse=False, insert_barriers=True, name='qft'))
         qc.barrier()
+
     for i, qubit in enumerate(q_reg):
-        qc.rx(amount * math.pi / 2 ** (numq - i - 1),c_reg,qubit)
-        
+        qc.crx(amount * math.pi / 2 ** (numq - i - 1), c_reg, qubit)
 
     if apply_QFT:
         qc.barrier()
