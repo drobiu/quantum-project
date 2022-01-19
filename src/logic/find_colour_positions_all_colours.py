@@ -9,6 +9,7 @@ from src.logic.oracles import oracle_a
 from qiskit.circuit.library import DraperQFTAdder
 from src.util.util import run_qc
 from src.arithmetic.add import add
+from src.arithmetic.counter import count
 
 sys.path.extend('../')
 
@@ -23,19 +24,43 @@ def FCPA(circuit, y_register, qy_register, s_register,memory,k, secret_string, c
 
     # step 1: apply H gate
     circuit.h(y_register[:])
+    circuit.barrier()
 
-    #step 2: repeat k times
+    #step 2: section that repeat k times
 
-    for d in range(k):
+    for d in range(1):
         #Query
         circuit = circuit.compose(query_cd(c, d), [*y_register, *qy_register])
+        circuit.barrier()
         #Apply oracle A
         circuit = oracle_a(circuit, qy_register, s_register, secret_string)
+        circuit.barrier()
         #store in memory qubits
         circuit=add(circuit,s_register,memory)
+        circuit.barrier()
         #Apply inverse Oracle A
         circuit = oracle_a(circuit, qy_register, s_register, secret_string,do_inverse=True)
+        circuit.barrier()
         #Apply inverse Query
+        circuit = circuit.compose(query_cd(c, d), [*y_register, *qy_register])
+        circuit.barrier()
+
+    #step 3: count
+    circuit=count(circuit,memory,y_register)
+    circuit.barrier()
+
+    #step 4:ignore
+    #First 2 memory registers must be ignored
+
+    #step 5: decrement
+
+    #step 6: z gate
+
+    #step 7: undo
+
+    #step 8: Hadamard
+    #circuit.h(y_register[:])
+
 
     return circuit
 
