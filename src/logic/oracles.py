@@ -5,7 +5,7 @@ import sys
 
 from qiskit.circuit.library import QFT
 
-from src.arithmetic.increment import control_increment
+from src.arithmetic.increment import control_increment, control_decrement
 from qiskit import QuantumRegister, ClassicalRegister, QuantumCircuit
 from scipy.special import binom
 
@@ -42,7 +42,7 @@ def c_gate(k, length=4):
     return s_gate(s, length / 2)
 
 
-def oracle_b(circuit, q, b, s):
+def oracle_b(circuit, q, b, s, do_inverse=False):
     q_l = len(q)
     b_l = len(b)
     n = len(s)
@@ -72,7 +72,10 @@ def oracle_b(circuit, q, b, s):
 
         print(color, c_n, contrib)
 
-        circuit = count(circuit, b, q, step=2, apply_QFT=False)
+        if not do_inverse:
+            circuit = count(circuit, b, q, step=2, apply_QFT=False)
+        else:
+            circuit = mincount(circuit, b, q, step=2, apply_QFT=False)
 
         for i in range(c_n, n):
             comp = contrib[i]
@@ -90,7 +93,10 @@ def oracle_b(circuit, q, b, s):
                 for qb in qubit_combinations:
                     temp_qubits += qb
 
-                circuit = control_increment(circuit, b, temp_qubits, amount=comp, apply_QFT=False)
+                if not do_inverse:
+                    circuit = control_increment(circuit, b, temp_qubits, amount=comp, apply_QFT=False)
+                else:
+                    circuit = control_decrement(circuit, b, temp_qubits, amount=comp, apply_QFT=False)
         circuit = circuit.compose(c_gate(color))
 
     circuit = circuit.compose(QFT(num_qubits=b_l, approximation_degree=0, do_swaps=True,
