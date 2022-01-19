@@ -57,12 +57,15 @@ def FCPA(circuit, y_register, qy_register, s_register,memory,k, secret_string, c
     circuit=decrement(circuit,memory[2:5])
     circuit.barrier()
 
-    #step 6: z gate
+    #step 6: z gate to LSB memory
+    circuit.z(memory[2])
+    circuit.barrier()
 
-    #step 7: undo
+    #step 7: undo step 2:5
 
     #step 8: Hadamard
-    #circuit.h(y_register[:])
+    circuit.h(y_register[:])
+    circuit.barrier()
 
 
     return circuit
