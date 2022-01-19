@@ -12,7 +12,7 @@ def increment(circuit, register, amount=1, apply_QFT=True):
     if apply_QFT:
         qc.barrier()
         qc = qc.compose(QFT(num_qubits=num, approximation_degree=0, do_swaps=True,
-                            inverse=False, insert_barriers=True, name='qft'))
+                            inverse=False, insert_barriers=True, name='qft'),register)
         qc.barrier()
 
     for i, qubit in enumerate(q_reg):
@@ -21,7 +21,7 @@ def increment(circuit, register, amount=1, apply_QFT=True):
     if apply_QFT:
         qc.barrier()
         qc = qc.compose(QFT(num_qubits=num, approximation_degree=0, do_swaps=True,
-                            inverse=True, insert_barriers=True, name='iqft'))
+                            inverse=True, insert_barriers=True, name='iqft'),register)
         qc.barrier()
 
     return qc
