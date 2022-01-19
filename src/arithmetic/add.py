@@ -3,7 +3,7 @@ from qiskit import *
 from qiskit.circuit.library.standard_gates import PhaseGate
 from mastermind.arithmetic.qft import qft, iqft
 
-def add(circuit,a,b,apply_QFT=true,amount=1)
+def add(circuit,a,b,apply_QFT=true,amount=1):
     #Function adds a to b
     #Original add function build by https://github.com/TimVroomans/Quantum-Mastermind/blob/master/src/mastermind/arithmetic/dradder.py
     number_a=len(a)
