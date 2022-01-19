@@ -1,7 +1,7 @@
 from qiskit import QuantumRegister, QuantumCircuit, ClassicalRegister
 from src.logic.oracles import oracle_b
 from src.logic.query import query
-from src.arithmetic.counter import mincount
+from src.arithmetic.counter import mincount, count
 from src.arithmetic.comparator import comparator
 from src.util.util import run_qc
 
@@ -68,7 +68,22 @@ def find_used_colours(n_positions, n_colors, secret_string):
     qc.z(h)
     qc.barrier()
 
-    # TODO: Step 10
+    # Step 10
+    qc.x(f)
+    qc.cx([b[0], f[0], g[0]], h)
+    qc.cx([e[0], f[0], g[0]], h)
+    qc.x(f)
+    qc.cx([e[0], f[0], g[0]], h)
+    qc.cx(d[0], h)
+    qc.x(a[:])
+    qc.cx(a[:], g)
+    qc.x(a[:])
+    qc.x(g)
+    qc = comparator(qc, a, e, f, 3)
+    qc = count(qc, e, b)
+    qc.x(e[2])
+    qc = oracle_b(qc, c, d, s, True)
+    qc = query(qc, b, c)
 
     #  Step 11
     qc.h(b[:])
