@@ -33,7 +33,7 @@ def query(num_array=[0, 1, 2, 3], num_state_array=2):
 
 # print(query().draw(output="text"))
 
-def query_cd(c_in=1, d_in=2, num_position_bits=4, num_state_array=2):
+def query_cd(c_in=2, d_in=3, num_position_bits=4, num_state_array=2):
     # c_in:          int, represents color c
     # d_in:          int, represents color d
     # Each position qbit corresponds to two or three color bits
@@ -76,4 +76,6 @@ def query_cd(c_in=1, d_in=2, num_position_bits=4, num_state_array=2):
 
     return qc
 
-# print(query_cd(1,2).draw(output="text"))
+
+if __name__ == '__main__':
+    print(query_cd(0, 1).draw(output="text"))
