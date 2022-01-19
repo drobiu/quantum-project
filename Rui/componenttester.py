@@ -1,31 +1,27 @@
 import os
-import sys 
-sys.path.append('../')
-from getpass import getpass
+import sys
+
 from coreapi.auth import TokenAuthentication
 from qiskit import BasicAer, execute
 from qiskit.circuit import QuantumRegister, ClassicalRegister, QuantumCircuit
-from query import query
-from quantuminspire.credentials import get_authentication
 from quantuminspire.qiskit import QI
+
 from FCP import FCP
+
+sys.path.append('../')
 
 QI_URL = os.getenv('API_URL', 'https://api.quantum-inspire.com/')
 authentication = TokenAuthentication('40a1a77810b8d0e10428efa64ae124e79f2b6336', scheme='token')
 QI.set_authentication(authentication, QI_URL)
 qi_backend = QI.get_backend('QX single-node simulator')
 
-
 q = QuantumRegister(15, "q")
 c = ClassicalRegister(15, "c")
 qc = QuantumCircuit(q, c, name="conditional")
 
-qc=qc.compose(FCP(4,2,[0,1,0,1]),range(15))
+qc = qc.compose(FCP(4, 2, [0, 1, 0, 1]), range(15))
 
-
-
-
-qc.measure(q,c)
+qc.measure(q, c)
 
 qi_job = execute(qc, backend=qi_backend, shots=128)
 qi_result = qi_job.result()
