@@ -50,7 +50,7 @@ def FCPA(circuit, y_register, qy_register, s_register,memory,k, secret_string, c
     circuit.barrier()
 
     #step 4:ignore
-    #First 2 memory registers must be ignored
+    #First 2 memory registers must be ignored.
 
     #step 5: decrement
 
