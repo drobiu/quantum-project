@@ -29,7 +29,7 @@ def FCPA(circuit, y_register, qy_register, s_register,memory,k, secret_string, c
 
     #step 2: section that repeat k times
 
-    for d in range(1):
+    for d in range(k):
         #Query
         circuit = circuit.compose(query_cd(c, d), [*y_register, *qy_register])
         circuit.barrier()
