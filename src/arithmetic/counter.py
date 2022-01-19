@@ -36,19 +36,19 @@ def mincount(circuit, count_register, control_register, amount=1, step=1, apply_
     assert a_l % step == 0
 
     if apply_QFT:
-        circuit.barrier()
+        # circuit.barrier()
         circuit = circuit.compose(QFT(num_qubits=q_l, approximation_degree=0, do_swaps=True,
-                                      inverse=False, insert_barriers=True, name='qft'))
-        circuit.barrier()
+                                      inverse=False, insert_barriers=True, name='qft'), qubits=count_register)
+        # circuit.barrier()
 
     for i in range(int(a_l / step)):
         circuit = control_decrement(circuit, count_register, control_register[i * step:(i + 1) * step], amount, apply_QFT=False)
 
     if apply_QFT:
-        circuit.barrier()
+        # circuit.barrier()
         circuit = circuit.compose(QFT(num_qubits=q_l, approximation_degree=0, do_swaps=True,
-                                      inverse=True, insert_barriers=True, name='iqft'))
-        circuit.barrier()
+                                      inverse=True, insert_barriers=True, name='iqft'), qubits=count_register)
+        # circuit.barrier()
 
     return circuit
 

@@ -6,17 +6,17 @@ import sys
 from qiskit.circuit.library import QFT
 
 from src.arithmetic.increment import control_increment
-
-sys.path.extend("../")
 from qiskit import QuantumRegister, ClassicalRegister, QuantumCircuit
 from scipy.special import binom
 
 from src.logic.s_gate import s_gate
-from src.arithmetic.counter import count,mincount
+from src.arithmetic.counter import count, mincount
 from src.util.util import run_qc
 
+sys.path.extend("../")
 
-def oracle_a(circuit, q, a, s,do_inverse=False):
+
+def oracle_a(circuit, q, a, s, do_inverse=False):
     """
     circuit:    the circuit to which to append the oracle.
     q:          quantum registers, color inputs.
@@ -24,11 +24,12 @@ def oracle_a(circuit, q, a, s,do_inverse=False):
     s:          array of integer. The input of s_gate, which represents the secret string.
     """
     circuit = circuit.compose(s_gate(s).to_gate(label="s"), qubits=q)
+
     if not do_inverse:
-     circuit = count(circuit, a, q, step=2)
+        circuit = count(circuit, a, q, step=2)
 
     if do_inverse:
-     circuit=mincount(circuit,a,q,step=2)
+        circuit = mincount(circuit, a, q, step=2)
 
     circuit = circuit.compose(s_gate(s).to_gate(label="s"), qubits=q)
 
