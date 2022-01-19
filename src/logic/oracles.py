@@ -12,7 +12,7 @@ from qiskit import QuantumRegister, ClassicalRegister, QuantumCircuit
 from scipy.special import binom
 
 from src.logic.s_gate import s_gate
-from src.arithmetic.counter import count
+from src.arithmetic.counter import count,mincount
 from src.util.util import run_qc
 
 
@@ -28,7 +28,7 @@ def oracle_a(circuit, q, a, s,do_inverse=False):
      circuit = count(circuit, a, q, step=2)
 
     if do_inverse:
-     circuit=count(circuit,a,q,amount=-1,step=2)
+     circuit=mincount(circuit,a,q,step=2)
 
     circuit = circuit.compose(s_gate(s).to_gate(label="s"), qubits=q)
 
