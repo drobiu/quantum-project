@@ -17,7 +17,7 @@ def add(circuit,a,b,apply_QFT=True,amount=1):
     # QFT(optional)
     if apply_QFT:
         circuit = circuit.compose(QFT(num_qubits=num, approximation_degree=0, do_swaps=True,
-                            inverse=False, insert_barriers=True, name='qft'))
+                            inverse=False, insert_barriers=True, name='qft'),[*a,*b])
 
     # Actual add loop
     for i in range(number_a):
@@ -27,7 +27,7 @@ def add(circuit,a,b,apply_QFT=True,amount=1):
     #Inverse QFT (optional)
     if apply_QFT:
         circuit = circuit.compose(QFT(num_qubits=num, approximation_degree=0, do_swaps=True,
-                            inverse=True, insert_barriers=True, name='iqft'))
+                            inverse=True, insert_barriers=True, name='iqft'),[*a,*b])
 
     return circuit
 
