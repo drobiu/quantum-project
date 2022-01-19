@@ -10,6 +10,7 @@ from qiskit.circuit.library import DraperQFTAdder
 from src.util.util import run_qc
 from src.arithmetic.add import add
 from src.arithmetic.counter import count
+from src.arithmetic.increment import decrement
 
 sys.path.extend('../')
 
@@ -53,6 +54,8 @@ def FCPA(circuit, y_register, qy_register, s_register,memory,k, secret_string, c
     #First 2 memory registers must be ignored.
 
     #step 5: decrement
+    circuit=decrement(circuit,memory[2:5])
+    circuit.barrier()
 
     #step 6: z gate
 
