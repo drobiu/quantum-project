@@ -72,14 +72,14 @@ def FCPA(circuit, y_register, qy_register, s_register,memory,k, secret_string, c
 
     #step 7: undo step 2:5
     #undo decrement
-    #circuit=increment(circuit,memory[logk::])
-    #circuit.barrier()
+    circuit=increment(circuit,memory[logk::])
+    circuit.barrier()
     #undo count
-    #circuit = mincount(circuit, memory, y_register)
-    #circuit.barrier()
+    circuit = mincount(circuit, memory, y_register)
+    circuit.barrier()
     #undo the loop
-    #for d in range(k):
-        #circuit = circuit.compose(query_cd(c, d), [*y_register, *qy_register])
+    for d in range(k):
+        circuit = circuit.compose(query_cd(c, d), [*y_register, *qy_register])
 
 
 
