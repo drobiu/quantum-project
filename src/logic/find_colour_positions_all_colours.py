@@ -6,11 +6,12 @@ from qiskit import ClassicalRegister
 from qiskit.circuit.quantumcircuit import QuantumCircuit
 from qiskit.circuit.quantumregister import QuantumRegister
 from Rui.query import query_cd
+import numpy as np
 from src.logic.oracles import oracle_a
 from qiskit.circuit.library import DraperQFTAdder
 from src.util.util import run_qc
 from src.arithmetic.add import add
-from src.arithmetic.counter import count,mincount
+from src.arithmetic.counter import count, mincount
 from src.arithmetic.increment import decrement,increment
 
 
@@ -36,7 +37,7 @@ def FCPA(circuit, y_register, qy_register, s_register,memory,k, secret_string, c
         #Apply oracle A
         circuit = oracle_a(circuit, qy_register, s_register, secret_string)
         circuit.barrier()
-        #store in memory qubits
+        #add in memory qubits
         circuit=add(circuit,s_register,memory)
         circuit.barrier()
         #Apply inverse Oracle A
@@ -51,17 +52,50 @@ def FCPA(circuit, y_register, qy_register, s_register,memory,k, secret_string, c
     circuit.barrier()
 
     #step 4:ignore
-    #First 2 memory registers must be ignored.
+    #First logk lsb memory registers must be ignored.
+    #For visualizing Idendity gate will be applied
+    # Defining logk
+    logk = int(np.ceil(np.log2(k)))
 
-    #step 5: decrement
-    circuit=decrement(circuit,memory[2:5])
+    for i in range(logk):
+        circuit.i(memory[i])
     circuit.barrier()
 
-    #step 6: z gate to LSB memory
-    circuit.z(memory[2])
+    #step 5: decrement
+    #Decrement
+    circuit=decrement(circuit,memory[logk::])
+    circuit.barrier()
+
+    #step 6: z gate to the now remaining LSB memory
+    circuit.z(memory[logk])
     circuit.barrier()
 
     #step 7: undo step 2:5
+    #undo decrement
+    circuit=increment(circuit,memory[logk::])
+    circuit.barrier()
+    #undo count
+    circuit = mincount(circuit, memory, y_register)
+    circuit.barrier()
+    #undo the loop
+    for d in range(k):
+        #Query
+        circuit = circuit.compose(query_cd(c, d), [*y_register, *qy_register])
+        circuit.barrier()
+        #Oracle A
+        circuit = oracle_a(circuit, qy_register, s_register, secret_string)
+        circuit.barrier()
+        #Substractor
+        circuit = add(circuit, s_register, memory,amount=-1)
+        circuit.barrier()
+        # Apply inverse Oracle A
+        circuit = oracle_a(circuit, qy_register, s_register, secret_string, do_inverse=True)
+        circuit.barrier()
+        # Apply inverse Query
+        circuit = circuit.compose(query_cd(c, d), [*y_register, *qy_register])
+        circuit.barrier()
+
+
 
 
     #step 8: Hadamard
@@ -80,7 +114,7 @@ if __name__ == "__main__":
     memory=QuantumRegister(5)
     qc = QuantumCircuit(y, qy, s,memory, c2)
     #k is number of available colours
-    k=6
+    k=4
 
     # qc.x(qy[0])
     qc = FCPA(qc, y, qy, s,memory,k,[1, 0, 0, 0],0)
