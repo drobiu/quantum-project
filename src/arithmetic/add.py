@@ -31,6 +31,7 @@ def add(circuit,a,b,apply_QFT=True,amount=1):
 
     return circuit
 
+#test
 a=QuantumRegister(3)
 b=QuantumRegister(5)
 qc=QuantumCircuit(a,b)
