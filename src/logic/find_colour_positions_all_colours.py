@@ -1,6 +1,7 @@
 
 import sys
 
+sys.path.extend('../')
 from qiskit import ClassicalRegister
 from qiskit.circuit.quantumcircuit import QuantumCircuit
 from qiskit.circuit.quantumregister import QuantumRegister
@@ -9,10 +10,9 @@ from src.logic.oracles import oracle_a
 from qiskit.circuit.library import DraperQFTAdder
 from src.util.util import run_qc
 from src.arithmetic.add import add
-from src.arithmetic.counter import count
-from src.arithmetic.increment import decrement
+from src.arithmetic.counter import count,mincount
+from src.arithmetic.increment import decrement,increment
 
-sys.path.extend('../')
 
 
 def FCPA(circuit, y_register, qy_register, s_register,memory,k, secret_string, c):
@@ -62,6 +62,7 @@ def FCPA(circuit, y_register, qy_register, s_register,memory,k, secret_string, c
     circuit.barrier()
 
     #step 7: undo step 2:5
+
 
     #step 8: Hadamard
     circuit.h(y_register[:])
