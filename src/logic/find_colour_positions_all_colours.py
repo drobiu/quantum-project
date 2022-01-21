@@ -37,7 +37,7 @@ def FCPA(circuit, y_register, qy_register, s_register,memory,k, secret_string, c
         #Apply oracle A
         circuit = oracle_a(circuit, qy_register, s_register, secret_string)
         circuit.barrier()
-        #store in memory qubits
+        #add in memory qubits
         circuit=add(circuit,s_register,memory)
         circuit.barrier()
         #Apply inverse Oracle A
@@ -79,7 +79,21 @@ def FCPA(circuit, y_register, qy_register, s_register,memory,k, secret_string, c
     circuit.barrier()
     #undo the loop
     for d in range(k):
+        #Query
         circuit = circuit.compose(query_cd(c, d), [*y_register, *qy_register])
+        circuit.barrier()
+        #Oracle A
+        circuit = oracle_a(circuit, qy_register, s_register, secret_string)
+        circuit.barrier()
+        #Substractor
+        circuit = add(circuit, s_register, memory,amount=-1)
+        circuit.barrier()
+        # Apply inverse Oracle A
+        circuit = oracle_a(circuit, qy_register, s_register, secret_string, do_inverse=True)
+        circuit.barrier()
+        # Apply inverse Query
+        circuit = circuit.compose(query_cd(c, d), [*y_register, *qy_register])
+        circuit.barrier()
 
 
 
