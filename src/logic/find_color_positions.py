@@ -5,14 +5,14 @@ from qiskit import ClassicalRegister
 from qiskit.circuit.quantumcircuit import QuantumCircuit
 from qiskit.circuit.quantumregister import QuantumRegister
 from src.logic.query import query_cd
+from src.arithmetic.increment import control_increment, control_decrement
 from src.logic.oracles import oracle_a
 from src.util.util import run_qc
-from src.arithmetic.increment import control_increment,control_decrement
 
 sys.path.extend('../')
 
 
-def FCP(circuit, y_register, qy_register, s_register, secret_string, c, d,d_positions=None):
+def FCP(circuit, y_register, qy_register, s_register, secret_string, c, d, d_positions=None):
     # init
     # q1 = QuantumRegister(num_position, "q1")
     # q2 = QuantumRegister(num_bits_color * num_position)
@@ -24,21 +24,23 @@ def FCP(circuit, y_register, qy_register, s_register, secret_string, c, d,d_posi
 
     # step 2: query
     circuit = circuit.compose(query_cd(c, d), [*y_register, *qy_register])
+    # _build_query_two_colours(qc, qy_register, y_register, c, d)
+
     circuit.barrier()
 
     # step 3: ask oracle
     circuit = oracle_a(circuit, qy_register, s_register, secret_string)
     circuit.barrier()
 
-    #step 3.alt: compensate for d positions
+    # step 3.alt: compensate for d positions
 
-    if d_positions != None:
-        for (i,j) in enumerate(d_positions):
+    if d_positions is not None:
+        for (i, j) in enumerate(d_positions):
             if j == 1:
-                #apply x gets to y
+                # apply x gets to y
                 circuit.x(y_register[i])
-                #apply decrement with y control
-                circuit=control_decrement(circuit,s_register,y_register[i])
+                # apply decrement with y control
+                circuit = control_decrement(circuit, s_register, [y_register[i]])
                 circuit.x(y_register[i])
                 circuit.barrier()
 
@@ -49,17 +51,18 @@ def FCP(circuit, y_register, qy_register, s_register, secret_string, c, d,d_posi
     # step 5: undo step 2 and 3
     circuit = oracle_a(circuit, qy_register, s_register, secret_string, do_inverse=True)
     circuit = circuit.compose(query_cd(c, d), [*y_register, *qy_register])
+    # _build_query_two_colours(qc, qy_register, y_register, c, d)
     circuit.barrier()
 
-    #step 5.alt: undo step 3.alt
+    # step 5.alt: undo step 3.alt
 
-    if d_positions != None:
-        for (i,j) in enumerate(d_positions):
+    if d_positions is not None:
+        for (i, j) in enumerate(d_positions):
             if j == 1:
-                #apply x gets to y
+                # apply x gets to y
                 circuit.x(y_register[i])
-                #apply decrement with y control
-                circuit=control_increment(circuit,s_register,y_register[i])
+                # apply decrement with y control
+                circuit = control_increment(circuit, s_register, [y_register[i]])
                 circuit.x(y_register[i])
                 circuit.barrier()
 
@@ -67,21 +70,83 @@ def FCP(circuit, y_register, qy_register, s_register, secret_string, c, d,d_posi
     circuit.h(y_register[:])
     circuit.barrier()
 
+    if c + d != 3:
+        circuit.x(y_register)
+
     return circuit
+
+
+def _build_query_two_colours(circuit, x, q, c, d):
+    '''
+    Performs CNOTs on the query q according to binary proto-query x:
+        - if x[i]=1, then the binary version of c is applied
+        - else, d is applied.
+    Parameters
+    ----------
+    circuit : QuantumCircuit
+        Circuit to build mastermind circuit on.
+    x : QuantumRegister, length n
+        holds binary proto-queries
+    q : QuantumRegister, length n*ceil(log2(k))
+        holds two-colour queries to the oracle
+    c : integer, c in {0, 1, ..., k-1}
+        the colour of which we want to know the positions
+    d : integer, d in {0, 1, ..., k-1}
+        any colour which does not occur in the secret string
+    Returns
+    -------
+    circuit : QuantumCircuit
+        Circuit with build_query_two_colours sub-circuit appended to it.
+    '''
+
+    n_x = len(x)
+    n_q = len(q)
+
+    amount_colour_bits = n_q // n_x
+
+    # 0 0 c_1 c_2
+    binary_c = bin(c)[2:].zfill(amount_colour_bits)
+    binary_d = bin(d)[2:].zfill(amount_colour_bits)
+
+    for i in range(n_x):
+        for (j, bit) in enumerate(binary_c[::-1]):
+            if bit == '1':
+                circuit.cnot(x[i], q[i * amount_colour_bits + j])
+            else:
+                pass
+        circuit.x(x[i])
+        for (j, bit) in enumerate(binary_d[::-1]):
+            if bit == '1':
+                circuit.cnot(x[i], q[i * amount_colour_bits + j])
+            else:
+                pass
+        circuit.x(x[i])
+
+    return circuit
+
+    #     d
+    #   x 0 1 2 3
+    # c 0 - x x v
+    #   1 x - v x
+    #   2 x v - x
+    #   3 v x x -
+    #
+    #   x - bit flip
+    #   v - correct
 
 
 if __name__ == "__main__":
     qy = QuantumRegister(8, name='qy')
     y = QuantumRegister(4, name='y')
     s = QuantumRegister(3)
-    c = ClassicalRegister(4)
-    qc = QuantumCircuit(y, qy, s, c)
+    cr = ClassicalRegister(4)
+    qc = QuantumCircuit(y, qy, s, cr)
 
     # qc.x(qy[0])
-    qc = FCP(qc, y, qy, s, [1, 0, 0, 0],0,0,d_positions=[0,1])
+    qc = FCP(qc, y, qy, s, [1, 0, 3, 3], 1, 2)
     qc.barrier()
 
-    qc.measure(y[:], c[::-1])
+    qc.measure(y[:], cr[::-1])
 
     run_qc(qc, with_QI=False)
-    print(qc.draw(output="text"))
+    qc.draw(output="mpl")

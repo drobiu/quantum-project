@@ -1,6 +1,7 @@
 from qiskit.circuit.quantumcircuit import QuantumCircuit
 from qiskit.circuit.quantumregister import QuantumRegister
 
+
 def query(circuit, c, q, num_array=[0, 1, 2, 3], num_state_array=2):
     i = 0
     ind = 0
@@ -19,6 +20,7 @@ def query(circuit, c, q, num_array=[0, 1, 2, 3], num_state_array=2):
         ind += 1
 
     return circuit
+
 
 def query_cd(c_in=2, d_in=3, num_position_bits=4, num_state_array=2):
     # c_in:          int, represents color c
