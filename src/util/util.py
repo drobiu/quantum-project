@@ -5,7 +5,7 @@ from quantuminspire.credentials import get_authentication
 from quantuminspire.qiskit import QI
 
 
-def run_qc(qc, with_QI=True):
+def run_qc(qc, with_QI=True, n_shots=1024, verbose=True):
     if with_QI:
         QI_URL = os.getenv('API_URL', 'https://api.quantum-inspire.com/')
 
@@ -13,15 +13,19 @@ def run_qc(qc, with_QI=True):
         QI.set_authentication(authentication, QI_URL)
         qi_backend = QI.get_backend('QX single-node simulator')
 
-        qi_job = execute(qc, backend=qi_backend, shots=1024)
+        qi_job = execute(qc, backend=qi_backend, shots=n_shots)
         qi_result = qi_job.result()
         histogram = qi_result.get_counts(qc)
-        print("\nResult from the remote Quantum Inspire backend:\n")
-        print('State\tCounts')
-        [print('{0}\t{1}'.format(state, counts)) for state, counts in histogram.items()]
+        if verbose:
+            print("\nResult from the remote Quantum Inspire backend:\n")
+            print('State\tCounts')
+            [print('{0}\t{1}'.format(state, counts)) for state, counts in histogram.items()]
 
-    print("\nResult from the local Qiskit simulator backend:\n")
+        print("\nResult from the local Qiskit simulator backend:\n")
     backend = BasicAer.get_backend("qasm_simulator")
-    job = execute(qc, backend=backend, shots=1024)
+    job = execute(qc, backend=backend, shots=n_shots)
     result = job.result()
-    print(result.get_counts(qc))
+    if verbose:
+        print(result.get_counts(qc))
+
+    return result
