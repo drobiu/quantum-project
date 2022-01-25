@@ -1,14 +1,19 @@
 from itertools import combinations
 
 import numpy as np
-from qiskit import QuantumRegister, ClassicalRegister, QuantumCircuit
+import sys
+
 from qiskit.circuit.library import QFT
+
+from src.arithmetic.increment import control_increment, control_decrement
+from qiskit import QuantumRegister, ClassicalRegister, QuantumCircuit
 from scipy.special import binom
 
-from src.arithmetic.counter import count, mincount
-from src.arithmetic.increment import control_increment, control_decrement
 from src.logic.s_gate import s_gate
+from src.arithmetic.counter import count, mincount
 from src.util.util import run_qc
+
+sys.path.extend("../")
 
 
 def oracle_a(circuit, q, a, s, do_inverse=False):
@@ -100,26 +105,151 @@ def oracle_b(circuit, q, b, s, do_inverse=False):
     return circuit
 
 
+def build_mastermind_b_circuit_v2(circuit, q, b, c, d, s, do_inverse=False):
+    '''
+    Counts b_s(q): the number of correct colours in query q (compared to s).
+    Parameters
+    ----------
+    circuit : QuantumCircuit
+        Quantum circuit to perform counting on.
+    q : QuantumRegister, length n*ceil(log(k))
+        Query register.
+    b : QuantumRegister, length ceil(log(n))+1
+        Register which stores amount of correct colours.
+    c : QuantumRegister, length ceil(log(n))+1
+        Ancilla register which stores the differences abs(n_s(q)-n_c(q)).
+    d : QuantumRegister, length 1
+        Ancilla register which stores the sign sgn(n_s(q)-n_c(q)).
+    s : Int list, length n
+        Secret string.
+    do_inverse : bool (default: False)
+        Whether to perform the inverse of the circuit.
+    Returns
+    -------
+    circuit : QuantumCircuit
+        Quantum circuit appended with b-oracle.
+
+    '''
+
+    # Extract basic system parameters (n = # of pins, k = # of colours, logk = # of bits for k)
+    n = len(s)
+    logk = len(q) // n
+
+    # How often which colour occurs in the list
+    secret_sequence_colours_amount = [list(s).count(i) for i in range(2 ** logk)]  # rather k, but that's annoying
+
+    # Check if valid secret string
+    if sum(secret_sequence_colours_amount) != n:
+        raise ValueError("Secret string contains illegal values")
+
+    # Put QFT on reg b outside loop for efficiency
+    qft(circuit, b)
+
+    # Add n to reg b (equivalent to adding n_c for each c; more efficient)
+    increment(circuit, b, amount=n, do_qft=False)
+
+    # Flip sign bit d
+    circuit.x(d)
+    # Loop over colours (and how often they're used)
+    for (clr, nc) in enumerate(secret_sequence_colours_amount):
+        # Only start counting process is colour is used at all
+        if nc != 0:
+
+            # Write colour clr in n*binary...
+            binary_list = [bin(clr)[2:].zfill(logk)] * n
+            # ... to CNOT with query (so if matches, then |11>)
+            binary_to_x_gates(circuit, q, binary_list)
+
+            if not do_inverse:
+
+                # Add n_c(s) to reg c...
+                increment(circuit, c, amount=nc, do_qft=True)
+
+                # ... and subtract n_c(q) from that value (with sign bit d)
+                icount(circuit, q, [*c, d], step=logk, do_qft=True)
+
+                # If sign bit d has not flipped (i.e. is True, i.e n_c(q)<n_c(s)):
+                #  subtract difference n_c(s)-n_c(q)
+                csub(circuit, a=c, b=b, c=d, do_qft=False)
+
+                # Undo step 1 & 2
+                count(circuit, q, [*c, d], step=logk, do_qft=True)
+                decrement(circuit, c, amount=nc, do_qft=True)
+
+            else:
+
+                # Inverse of steps above
+                increment(circuit, c, amount=nc, do_qft=True)
+                icount(circuit, q, [*c, d], step=logk, do_qft=True)
+                cadd(circuit, a=c, b=b, c=d, do_qft=False)
+                decrement(circuit, b, amount=nc, do_qft=False)
+                count(circuit, q, [*c, d], step=logk, do_qft=True)
+                decrement(circuit, c, amount=nc, do_qft=True)
+
+            # Undo query CNOT
+            binary_to_x_gates(circuit, q, binary_list)
+            circuit.barrier()
+
+    # Flip sign bit d
+    circuit.x(d)
+
+    # Finish sum procedure with iQFT on reg b
+    iqft(circuit, b)
+
+    return circuit
+
+
+def binary_to_x_gates(circuit, q, s_bin):
+    '''
+    Places an x gate for each 0 of an element of s_bin
+    Parameters
+    ----------
+    circuit : QuantumCircuit
+        Circuit to add x gates to.
+    q : QuantumRegister, length n*ceil(log(k))
+        Register to add x gates to.
+    s_bin : str list, length n (and strings of length ceil(log(k)))
+        list containing binary strings.
+    Returns
+    -------
+    circuit : QuantumCircuit
+        Circuit appended with x gates according to secret_binary.
+
+    '''
+
+    # Amount of colour bits
+    logk = len(s_bin[0])
+
+    for (i, binary) in enumerate(s_bin):
+        for (j, bit) in enumerate(binary[::-1]):
+            if bit == '0':
+                # add an X gate for a 0
+                circuit.x(q[i * logk + j])
+            else:
+                # and otherwise an identity for clarity
+                circuit.i(q[i * logk + j])
+
+    return circuit
+
+
 def test():
     q = QuantumRegister(8)
     b = QuantumRegister(3)
-    c = QuantumRegister(3)
-    d = QuantumRegister(1)
-    cr = ClassicalRegister(15)
-    qc = QuantumCircuit(q, b, c, d, cr)
+    c = ClassicalRegister(3)
+    qc = QuantumCircuit(q, b, c)
 
-    # 01, 00, 00, 00
+    # 01, 11, 11, 11
 
-    qc.x(q[1])
+    qc.x(q[0])
+    qc.x(q[2:8])
     qc.barrier()
 
     # [0, 0, 0, 1] = 11, 11, 11, 10
 
-    # qc = oracle_b(qc, q, b, [0, 0, 0, 1])
-    qc = build_mastermind_b_circuit_v2(qc, q, b, c, d, [0, 1, 1, 1])
+    qc = oracle_b(qc, q, b, [0, 0, 0, 1])
 
     # Should equal 110
-    qc.measure([*q, *b, *c, *d], cr[:])
+    qc.measure(b[:], c[:])
 
     run_qc(qc, with_QI=False)
     qc.draw(output="text")

@@ -2,12 +2,12 @@ from qiskit.circuit.quantumcircuit import QuantumCircuit
 from qiskit.circuit.quantumregister import QuantumRegister
 
 
-def s_gate(num_array, num_state_array=2):
-    num_bits = len(num_array) * num_state_array
+def sgate(numarray, num_state_array=2):
+    num_bits = len(numarray) * num_state_array
     i = 0
     q = QuantumRegister(num_bits, "q")
     qc = QuantumCircuit(q)
-    for x in num_array:
+    for x in numarray:
         if num_state_array == 3:
             if x < 4:
                 qc.x(i)
@@ -19,3 +19,6 @@ def s_gate(num_array, num_state_array=2):
             qc.x(i)
         i += 1
     return qc
+
+
+#print(sgate(range(4)).draw(output="text"))
