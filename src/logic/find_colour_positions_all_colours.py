@@ -16,7 +16,7 @@ def FCPA(circuit, y_register, qy_register, s_register, memory, k, secret_string,
     # q1 = QuantumRegister(num_position, "q1")
     # q2 = QuantumRegister(num_bits_color * num_position)
     # out = QuantumRegister(num_bits_color + 1, "o")
-
+    c = 3 - c
     # step 1: apply H gate
     circuit.h(y_register[:])
     circuit.barrier()
@@ -71,7 +71,16 @@ def FCPA(circuit, y_register, qy_register, s_register, memory, k, secret_string,
     circuit = mincount(circuit, memory, y_register)
     circuit.barrier()
     # undo the loop
+
     for d in range(k):
+        # cases:
+        # d not in s: position c +1
+        # d = c: position c+0
+        # d in s != c: position c+1, position d+1
+        # all mod 2
+        # position c +5 == 1
+        # position d +1 == 1
+        print(d)
         # Query
         circuit = circuit.compose(query_cd(c, d), [*y_register, *qy_register])
         circuit.barrier()
@@ -107,7 +116,7 @@ if __name__ == "__main__":
     k = 4
 
     # qc.x(qy[0])
-    qc = FCPA(qc, y, qy, s, memory, k, [1, 0, 2, 3], 0)
+    qc = FCPA(qc, y, qy, s, memory, k, [3, 2, 1, 0], 3)
     qc.barrier()
 
     qc.measure(y[:], c2[::-1])
