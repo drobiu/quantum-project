@@ -1,6 +1,6 @@
 import os
 import sys
-
+sys.path.extend('../')
 from qiskit import ClassicalRegister
 from qiskit.circuit.quantumcircuit import QuantumCircuit
 from qiskit.circuit.quantumregister import QuantumRegister
@@ -8,7 +8,7 @@ from Rui.query import query_cd
 from src.logic.oracles import oracle_a
 from src.util.util import run_qc
 
-sys.path.extend('../')
+
 
 
 def FCP(circuit, y_register, qy_register, s_register, secret_string, c, d):
@@ -47,7 +47,7 @@ if __name__ == "__main__":
     qc = QuantumCircuit(y, qy, s, c)
 
     # qc.x(qy[0])
-    qc = FCP(qc, y, qy, s, [1, 0, 0, 0])
+    qc = FCP(qc, y, qy, s, [1, 0, 0, 0],3,3)
     qc.barrier()
 
     qc.measure(y[:], c[::-1])
