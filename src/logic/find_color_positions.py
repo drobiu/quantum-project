@@ -143,7 +143,7 @@ if __name__ == "__main__":
     qc = QuantumCircuit(y, qy, s, cr)
 
     # qc.x(qy[0])
-    qc = FCP(qc, y, qy, s, [1, 0, 3, 3], 1, 2)
+    qc = FCP(qc, y, qy, s, [1, 0, 3, 3], 1, 1)
     qc.barrier()
 
     qc.measure(y[:], cr[::-1])
