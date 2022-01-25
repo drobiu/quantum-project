@@ -1,16 +1,14 @@
 import numpy as np
 from qiskit import QuantumRegister, QuantumCircuit, ClassicalRegister
 
-from src.logic.find_used_colours import find_used_colours
 from src.logic.find_color_positions import FCP
 from src.util.util import run_qc
 
-secret_string = [0, 0, 1, 0]
+secret_string = [3, 2, 2, 0]
 
-# qc = find_used_colours(4, 4, secret_string)
-#
-# result = run_qc(qc)
+print("Input string:", secret_string)
 
+print("\nPerforming FUC\n")
 colors = np.zeros(4)
 
 for i in secret_string:
@@ -20,11 +18,16 @@ results = []
 
 colors = list(colors)
 
+print("FCP result:", colors)
+
+print("\nPerforming FCP\n")
+
 if not np.array_equal(np.array(colors), np.ones_like(colors)):
     zero = colors.index(0)
     for i in range(4):
         if colors[i] == 0:
             results.append(np.zeros(4))
+            print("Color", i, ": -")
             continue
         qy = QuantumRegister(8, name='qy')
         y = QuantumRegister(4, name='y')
@@ -40,6 +43,8 @@ if not np.array_equal(np.array(colors), np.ones_like(colors)):
 
         curr_result = list(result.get_counts(qc).keys())
         assert len(curr_result) == 1
+
+        print("Color", i, ":", curr_result[0])
 
         results.append(list(map(int, str(curr_result[0]))))
 

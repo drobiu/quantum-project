@@ -1,5 +1,3 @@
-import sys
-
 from qiskit import ClassicalRegister
 from qiskit.circuit.quantumcircuit import QuantumCircuit
 from qiskit.circuit.quantumregister import QuantumRegister
@@ -10,8 +8,6 @@ from src.util.util import run_qc
 from src.arithmetic.add import add
 from src.arithmetic.counter import count, mincount
 from src.arithmetic.increment import decrement, increment
-
-sys.path.extend('../')
 
 
 def FCPA(circuit, y_register, qy_register, s_register, memory, k, secret_string, c):
@@ -76,7 +72,6 @@ def FCPA(circuit, y_register, qy_register, s_register, memory, k, secret_string,
     circuit.barrier()
     # undo the loop
     for d in range(k):
-        print(d)
         # Query
         circuit = circuit.compose(query_cd(c, d), [*y_register, *qy_register])
         circuit.barrier()

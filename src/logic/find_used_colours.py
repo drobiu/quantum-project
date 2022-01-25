@@ -1,11 +1,10 @@
 from qiskit import QuantumRegister, QuantumCircuit, ClassicalRegister, BasicAer, execute
 from qiskit.circuit.library import XGate
 
-from src.logic.oracles import oracle_b, oracle_a
-from src.logic.query import query
-from src.arithmetic.counter import mincount, count
 from src.arithmetic.comparator import comparator
-from src.util.util import run_qc
+from src.arithmetic.counter import mincount, count
+from src.logic.oracles import oracle_a, oracle_b
+from src.logic.query import query
 
 
 def find_used_colours(n_positions, n_colors, secret_string):
@@ -23,103 +22,84 @@ def find_used_colours(n_positions, n_colors, secret_string):
     h = QuantumRegister(1)
     cl = ClassicalRegister(4)
 
-    qc = QuantumCircuit(a, b, c, d, e, f, g, h, cl)
+    circuit = QuantumCircuit(a, b, c, d, e, f, g, h, cl)
 
     # Step 1
-    qc = oracle_a(qc, c, a, s)
+    circuit = oracle_a(circuit, c, a, s)
     # qc.barrier()
 
     # Step 2
-    qc.h(b[:])
+    circuit.h(b[:])
     # qc.barrier()
 
     # Step 3
-    _build_query(qc, b, c)
+    circuit = query(circuit, b, c, s)
     # qc.barrier()
 
     # Step 4
-    qc = oracle_b(qc, c, d, s)
+    circuit = oracle_b(circuit, c, d, s)
     # qc.barrier()
 
     # Step 5
-    qc.x(e[-1])
-    qc = mincount(qc, e, b)
+    circuit.x(e[-1])
+    circuit = mincount(circuit, e, b)
     # qc.barrier()
 
     # Step 6
-    qc = comparator(qc, a, e, f, 3)
+    circuit = comparator(circuit, a, e, f, 3)
     # qc.barrier()
 
     # Step 7
-    qc.x(g)
-    qc.x(a[:])
-    multiply_controlled_x(qc, a, g)
-    qc.x(a[:])
+    circuit.x(g)
+    circuit.x(a[:])
+    multiply_controlled_x(circuit, a, g)
+    circuit.x(a[:])
     # qc.barrier()
 
     # Step 8
-    qc.x(d[0], h)
-    multiply_controlled_x(qc, [e[0], f, g], h)
-    qc.x(f)
-    multiply_controlled_x(qc, [e[0], f, g], h)
-    multiply_controlled_x(qc, [b[0], f, g], h)
-    qc.x(f)
+    circuit.x(d[0], h)
+    multiply_controlled_x(circuit, [e[0], f, g], h)
+    circuit.x(f)
+    multiply_controlled_x(circuit, [e[0], f, g], h)
+    multiply_controlled_x(circuit, [b[0], f, g], h)
+    circuit.x(f)
     # qc.barrier()
 
     # Step 9
-    qc.z(h)
+    circuit.z(h)
     # qc.barrier()
 
     # Step 10
-    qc.x(f)
-    multiply_controlled_x(qc, [b[0], f, g], h)
-    multiply_controlled_x(qc, [e[0], f, g], h)
-    qc.x(f)
-    multiply_controlled_x(qc, [e[0], f, g], h)
-    qc.cx(d[0], h)
-    qc.x(a[:])
-    qc.cx(a[:], g)
-    qc.x(a[:])
-    qc.x(g)
-    qc = comparator(qc, a, e, f, 3)
-    qc = count(qc, e, b)
-    qc.x(e[2])
-    qc = oracle_b(qc, c, d, s, True)
-    _build_query(qc, b, c)
+    circuit.x(f)
+    multiply_controlled_x(circuit, [b[0], f, g], h)
+    multiply_controlled_x(circuit, [e[0], f, g], h)
+    circuit.x(f)
+    multiply_controlled_x(circuit, [e[0], f, g], h)
+    circuit.cx(d[0], h)
+    circuit.x(a[:])
+    circuit.cx(a[:], g)
+    circuit.x(a[:])
+    circuit.x(g)
+    circuit = comparator(circuit, a, e, f, 3)
+    circuit = count(circuit, e, b)
+    circuit.x(e[2])
+    circuit = oracle_b(circuit, c, d, s, do_inverse=True)
+    circuit = query(circuit, b, c, s)
 
     #  Step 11
-    qc.h(b[:])
+    circuit.h(b[:])
     # qc.barrier()
 
     #  Step 12
-    qc.measure(b[:], cl[:])
+    circuit.measure(b[:], cl[:])
 
-    qc.draw(output='text')
+    # circuit.draw(output='text')
 
     print("\nResult from the local Qiskit simulator backend:\n")
     backend = BasicAer.get_backend("qasm_simulator")
-    job = execute(qc, backend=backend, shots=1)
+    job = execute(circuit, backend=backend, shots=1)
     result = job.result()
-    print(result.get_counts(qc))
-
-    return qc
-
-
-def _build_query(circuit, x, q):
-    n_x = len(x)
-    n_q = len(q)
-
-    amount_colour_bits = n_q // n_x
-
-    binary_list = [bin(x)[2:].zfill(amount_colour_bits) for x in range(n_x)]
-
-    for (i, binary) in enumerate(binary_list):
-        for (j, bit) in enumerate(binary[::-1]):
-            if bit == '1':  # or '0'?
-                circuit.cnot(x[i], q[i * amount_colour_bits + j])
-            else:
-                pass
-                # circuit.i(q[i*amount_colour_bits + j])
+    print(result.get_counts(circuit))
 
     return circuit
 
@@ -132,4 +112,4 @@ def multiply_controlled_x(circuit, control, qubit):
 
 
 if __name__ == "__main__":
-    qc = find_used_colours(4, 4, [1, 3, 2, 0])
+    qc = find_used_colours(4, 4, [2, 2, 2, 2])
