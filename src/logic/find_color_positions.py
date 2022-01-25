@@ -1,6 +1,3 @@
-import os
-import sys
-
 from qiskit import ClassicalRegister
 from qiskit.circuit.quantumcircuit import QuantumCircuit
 from qiskit.circuit.quantumregister import QuantumRegister
@@ -8,8 +5,6 @@ from src.logic.query import query_cd
 from src.arithmetic.increment import control_increment, control_decrement
 from src.logic.oracles import oracle_a
 from src.util.util import run_qc
-
-sys.path.extend('../')
 
 
 def FCP(circuit, y_register, qy_register, s_register, secret_string, c, d, d_positions=None):
@@ -72,55 +67,6 @@ def FCP(circuit, y_register, qy_register, s_register, secret_string, c, d, d_pos
 
     if c + d != 3:
         circuit.x(y_register)
-
-    return circuit
-
-
-def _build_query_two_colours(circuit, x, q, c, d):
-    '''
-    Performs CNOTs on the query q according to binary proto-query x:
-        - if x[i]=1, then the binary version of c is applied
-        - else, d is applied.
-    Parameters
-    ----------
-    circuit : QuantumCircuit
-        Circuit to build mastermind circuit on.
-    x : QuantumRegister, length n
-        holds binary proto-queries
-    q : QuantumRegister, length n*ceil(log2(k))
-        holds two-colour queries to the oracle
-    c : integer, c in {0, 1, ..., k-1}
-        the colour of which we want to know the positions
-    d : integer, d in {0, 1, ..., k-1}
-        any colour which does not occur in the secret string
-    Returns
-    -------
-    circuit : QuantumCircuit
-        Circuit with build_query_two_colours sub-circuit appended to it.
-    '''
-
-    n_x = len(x)
-    n_q = len(q)
-
-    amount_colour_bits = n_q // n_x
-
-    # 0 0 c_1 c_2
-    binary_c = bin(c)[2:].zfill(amount_colour_bits)
-    binary_d = bin(d)[2:].zfill(amount_colour_bits)
-
-    for i in range(n_x):
-        for (j, bit) in enumerate(binary_c[::-1]):
-            if bit == '1':
-                circuit.cnot(x[i], q[i * amount_colour_bits + j])
-            else:
-                pass
-        circuit.x(x[i])
-        for (j, bit) in enumerate(binary_d[::-1]):
-            if bit == '1':
-                circuit.cnot(x[i], q[i * amount_colour_bits + j])
-            else:
-                pass
-        circuit.x(x[i])
 
     return circuit
 
