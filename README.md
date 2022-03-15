@@ -1,6 +1,6 @@
 # Quantum Mastermind
 
-### An implementation of the Buhrmann quantum algorithm for solvind the Mastermind game.
+### An implementation of the Buhrmann quantum algorithm for solving the Mastermind game.
 
 Built using `qiskit` and compatible with the `quantuminspire` API simulators and quantum computers of the [Quantum Inspire](https://www.quantum-inspire.com/) platform by [QuTech](https://qutech.nl/).
 
